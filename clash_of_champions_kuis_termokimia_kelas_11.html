@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash of Champions: Termokimia Edition</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KaTeX for Math Expressions Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #090d16;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(30, 58, 138, 0.35) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(112, 26, 117, 0.3) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+            background-attachment: fixed;
+        }
+
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover:not(:disabled) {
+            transform: translateY(-3px);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        .neon-border-blue {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.6);
+        }
+
+        .neon-text-gold {
+            text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+        }
+
+        .neon-text-blue {
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Pulse animation for timer */
+        @keyframes timer-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.8; }
+        }
+
+        .timer-warning {
+            animation: timer-pulse 0.6s infinite ease-in-out;
+            color: #ef4444 !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-3 md:p-6 select-none">
+
+    <header class="w-full max-w-4xl flex justify-between items-center mb-4 px-2">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                <i class="fa-solid fa-trophy text-amber-300 text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-orbitron text-lg md:text-xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-200 to-amber-300">
+                    CLASH OF CHAMPIONS
+                </h1>
+                <p class="text-xs text-slate-400 tracking-widest font-semibold uppercase">Termokimia Edition • Kelas 11</p>
+            </div>
+        </div>
+
+        <button id="soundToggleBtn" onclick="toggleSound()" class="px-3 py-1.5 rounded-lg glass-card text-xs md:text-sm font-semibold flex items-center gap-2 hover:bg-slate-700/50 text-cyan-300">
+            <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+            <span id="soundText" class="hidden sm:inline">Audio ON</span>
+        </button>
+    </header>
+
+    <main class="w-full max-w-4xl flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: START SCREEN -->
+        <section id="startScreen" class="glass-panel rounded-2xl p-6 md:p-10 text-center relative overflow-hidden my-auto border-t-2 border-cyan-500/40">
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
+
+            <div class="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs md:text-sm font-bold tracking-widest mb-4">
+                <i class="fa-solid fa-bolt mr-1"></i> ARENA TURNAMEN KIMIA
+            </div>
+
+            <h2 class="text-3xl md:text-5xl font-extrabold font-orbitron mb-4 leading-tight">
+                BUKTIKAN DIRIMU SEBAGAI <br>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 neon-text-gold">
+                    MASTER OF THERMOCHEMISTRY
+                </span>
+            </h2>
+
+            <p class="text-slate-300 max-w-2xl mx-auto text-sm md:text-base mb-8 leading-relaxed">
+                Uji pemahamanmu mengenai sistem &amp; lingkungan, reaksi eksoterm &amp; endoterm, Hukum Hess, hingga energi ikatan dalam 3 Babak Tantangan bergaya Game Show!
+            </p>
+
+            <!-- Rounds Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-left">
+                <div class="glass-card p-4 rounded-xl border-l-4 border-cyan-400">
+                    <div class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">ROUND 1</div>
+                    <div class="font-bold text-slate-100 text-sm mb-1">Memory Arena</div>
+                    <p class="text-xs text-slate-400">Warm-Up Konsep Dasar Termokimia &amp; Sistem-Lingkungan.</p>
+                </div>
+                <div class="glass-card p-4 rounded-xl border-l-4 border-amber-400">
+                    <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">ROUND 2</div>
+                    <div class="font-bold text-slate-100 text-sm mb-1">Speed Calculation</div>
+                    <p class="text-xs text-slate-400">Perhitungan $q = m\cdot c\cdot \Delta T$, Hukum Hess &amp; $\Delta H$.</p>
+                </div>
+                <div class="glass-card p-4 rounded-xl border-l-4 border-purple-400">
+                    <div class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">ROUND 3</div>
+                    <div class="font-bold text-slate-100 text-sm mb-1">Ultimate Challenge</div>
+                    <p class="text-xs text-slate-400">Soal HOTS Energi Ikatan + Multiplier Poin 2x!</p>
+                </div>
+            </div>
+
+            <!-- Player Name Input -->
+            <div class="max-w-md mx-auto mb-6">
+                <label for="playerName" class="block text-left text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Masukkan Nama Champion:</label>
+                <div class="relative">
+                    <input type="text" id="playerName" placeholder="Contoh: Sandy / Shakira" class="w-full bg-slate-900/80 border border-slate-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 font-semibold text-center outline-none transition-all">
+                    <i class="fa-solid fa-user-astronaut absolute right-4 top-3.5 text-slate-500"></i>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="w-full max-w-md py-4 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-orbitron font-bold text-base md:text-lg rounded-xl shadow-lg shadow-cyan-500/30 transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-play mr-2"></i> MULAI PERTANDINGAN
+            </button>
+        </section>
+
+        <!-- SCREEN 2: QUIZ ARENA SCREEN -->
+        <section id="quizScreen" class="hidden glass-panel rounded-2xl p-4 md:p-8 flex-col my-auto border-t-2 border-cyan-500/40">
+            <!-- Top Status Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6 bg-slate-900/60 p-3 md:p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span id="roundBadge" class="px-3 py-1 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-bold font-orbitron">
+                        ROUND 1
+                    </span>
+                    <span id="questionNum" class="text-xs md:text-sm font-semibold text-slate-300">
+                        Soal 1/9
+                    </span>
+                </div>
+
+                <!-- Timer & Score -->
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                        <i class="fa-solid fa-clock text-amber-400 text-sm"></i>
+                        <span id="timerDisplay" class="font-orbitron font-bold text-amber-300 text-sm md:text-base">25s</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                        <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                        <span id="scoreDisplay" class="font-orbitron font-bold text-yellow-300 text-sm md:text-base">0 PTS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-6">
+                <div id="progressBar" class="bg-gradient-to-r from-cyan-400 to-blue-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="mb-6">
+                <div id="streakBadge" class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-2 hidden">
+                    <i class="fa-solid fa-fire mr-1"></i> Streak x<span id="streakCount">1</span> (+<span id="bonusPts">50</span> Pts Bonus)
+                </div>
+                <h3 id="questionText" class="text-base md:text-xl font-bold text-slate-100 leading-relaxed mb-3">
+                    Loading question...
+                </h3>
+            </div>
+
+            <!-- Options Grid -->
+            <div id="optionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                <!-- Options inserted via JS -->
+            </div>
+
+            <!-- Feedback / Explanation Card -->
+            <div id="feedbackContainer" class="hidden glass-card p-4 rounded-xl border border-cyan-500/30 bg-slate-900/90 mb-6">
+                <div class="flex items-center gap-2 font-bold mb-2 text-sm md:text-base" id="feedbackTitle">
+                    <i class="fa-solid fa-circle-info"></i> Pembahasan:
+                </div>
+                <p id="feedbackText" class="text-xs md:text-sm text-slate-300 leading-relaxed">
+                    Penjelasan akan ditunjukkan di sini.
+                </p>
+                <button onclick="nextQuestion()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-orbitron font-bold text-xs md:text-sm rounded-lg shadow-md transition-all flex items-center ml-auto">
+                    SOAL BERIKUTNYA <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: RESULT & LEADERBOARD SCREEN -->
+        <section id="resultScreen" class="hidden glass-panel rounded-2xl p-6 md:p-10 text-center my-auto border-t-2 border-amber-500/50">
+            <div class="inline-block p-4 rounded-full bg-amber-500/10 border-2 border-amber-400/50 mb-4 shadow-xl shadow-amber-500/20">
+                <i class="fa-solid fa-crown text-4xl md:text-5xl text-amber-400 animate-bounce"></i>
+            </div>
+
+            <h2 class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">HASIL AKHIR CHAMPIONSHIP</h2>
+            <h1 id="resultPlayerName" class="text-2xl md:text-3xl font-extrabold font-orbitron text-cyan-300 mb-2">
+                PEMAIN
+            </h1>
+
+            <!-- Champion Title Badge -->
+            <div id="championBadge" class="inline-block px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 border border-amber-400/40 text-amber-300 font-orbitron font-extrabold text-sm md:text-lg mb-6 shadow-md">
+                Master of Thermochemistry
+            </div>
+
+            <!-- Stats Summary Cards -->
+            <div class="grid grid-cols-3 gap-3 md:gap-4 max-w-lg mx-auto mb-8">
+                <div class="glass-card p-3 rounded-xl">
+                    <div class="text-xs text-slate-400 mb-1">Total Poin</div>
+                    <div id="finalScore" class="text-lg md:text-2xl font-bold font-orbitron text-amber-300">0</div>
+                </div>
+                <div class="glass-card p-3 rounded-xl">
+                    <div class="text-xs text-slate-400 mb-1">Akurasi</div>
+                    <div id="finalAccuracy" class="text-lg md:text-2xl font-bold font-orbitron text-cyan-300">0%</div>
+                </div>
+                <div class="glass-card p-3 rounded-xl">
+                    <div class="text-xs text-slate-400 mb-1">Benar / Total</div>
+                    <div id="finalCorrect" class="text-lg md:text-2xl font-bold font-orbitron text-emerald-400">0/9</div>
+                </div>
+            </div>
+
+            <!-- Local Leaderboard Section -->
+            <div class="max-w-lg mx-auto text-left mb-8">
+                <h3 class="font-orbitron text-sm font-bold text-slate-200 mb-3 flex items-center justify-between">
+                    <span><i class="fa-solid fa-list-ol text-cyan-400 mr-2"></i> HALL OF FAME (TOP CHAMPIONS)</span>
+                    <span class="text-xs font-normal text-slate-400">Tersimpan di Browser</span>
+                </h3>
+                <div id="leaderboardList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    <!-- Leaderboard items inserted via JS -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+                <button onclick="restartGame()" class="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-orbitron font-bold text-sm rounded-xl shadow-lg shadow-cyan-500/20 transition-all cursor-pointer">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> MAIN LAGI
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center text-xs text-slate-500 mt-6">
+        <p>© Clash of Champions Ruangguru Inspired • Media Pembelajaran Interaktif Kimia Termokimia</p>
+    </footer>
+
+    <script>
+        // Web Audio API Synthesizer (No external sound files required)
+        let audioCtx = null;
+        let isSoundOn = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!isSoundOn) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                // Happy Arpeggio Tone
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                // Low Error Tone
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(130, now + 0.15);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'tick') {
+                // Subtle Timer Click
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'finish') {
+                // Fanfare Tone
+                [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.setValueAtTime(freq, now + idx * 0.12);
+                    g.gain.setValueAtTime(0.2, now + idx * 0.12);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.3);
+                    o.start(now + idx * 0.12);
+                    o.stop(now + idx * 0.12 + 0.3);
+                });
+            }
+        }
+
+        function toggleSound() {
+            isSoundOn = !isSoundOn;
+            const icon = document.getElementById('soundIcon');
+            const text = document.getElementById('soundText');
+            if (isSoundOn) {
+                icon.className = 'fa-solid fa-volume-high';
+                text.innerText = 'Audio ON';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+                text.innerText = 'Audio OFF';
+            }
+        }
+
+        // Quiz Questions Data (Class 11 Thermochemistry)
+        const questions = [
+            // ROUND 1: Memory Arena
+            {
+                round: 1,
+                roundName: "ROUND 1: Memory Arena",
+                question: "Pada reaksi eksoterm, sistem melepaskan kalor ke lingkungan. Manakah pernyataan yang BENAR mengenai reaksi eksoterm?",
+                options: [
+                    "ΔH bernilai positif (+), suhu lingkungan meningkat",
+                    "ΔH bernilai negatif (-), suhu lingkungan meningkat",
+                    "ΔH bernilai negatif (-), suhu lingkungan menurun",
+                    "ΔH bernilai nol (0), tidak ada perubahan suhu"
+                ],
+                correct: 1,
+                explanation: "Reaksi eksoterm melepaskan kalor ($q_{sistem} < 0$). Oleh karena itu, entalpi hasil reaksi lebih kecil dari entalpi pereaksi ($\Delta H = H_{produk} - H_{reaktan} < 0$, bernilai negatif) dan kalor yang dilepas meningkatkan suhu lingkungan."
+            },
+            {
+                round: 1,
+                roundName: "ROUND 1: Memory Arena",
+                question: "Sebuah es batu ditempatkan dalam wadah termos tertutup rapat yang tidak memungkinkan perpindahan kalor maupun materi dengan lingkungan. Jenis sistem ini disebut...",
+                options: [
+                    "Sistem Terbuka",
+                    "Sistem Tertutup",
+                    "Sistem Terisolasi",
+                    "Sistem Adiabatik Bebas"
+                ],
+                correct: 2,
+                explanation: "Sistem Terisolasi adalah sistem yang tidak memungkinkan terjadinya pertukaran materi maupun energi (kalor) antara sistem dan lingkungan."
+            },
+            {
+                round: 1,
+                roundName: "ROUND 1: Memory Arena",
+                question: "Proses mana di bawah ini yang tergolong ke dalam peristiwa ENDOTERM dalam kehidupan sehari-hari?",
+                options: [
+                    "Pembakaran gas LPG di kompor",
+                    "Batu kapur (CaO) dilarutkan ke dalam air",
+                    "Penguapan air laut menjadi uap air",
+                    "Penggunaan kompres instan panas (Hot Pack)"
+                ],
+                correct: 2,
+                explanation: "Penguapan air membutuhkan penyerapan energi/kalor dari lingkungan agar molekul air cair berubah menjadi fase gas ($\Delta H > 0$), sehingga tergolong reaksi/proses endoterm."
+            },
+
+            // ROUND 2: Speed Calculation
+            {
+                round: 2,
+                roundName: "ROUND 2: Speed Calculation",
+                question: "Sebanyak 100 gram air dipanaskan sehingga suhunya naik dari $25^\circ C$ menjadi $45^\circ C$. Jika kalor jenis air $c = 4{,}2\\text{ J/g}^\circ C$, hitunglah jumlah kalor ($q$) yang diserap air!",
+                options: [
+                    "8.400 Joule",
+                    "4.200 Joule",
+                    "10.500 Joule",
+                    "16.800 Joule"
+                ],
+                correct: 0,
+                explanation: "$q = m \\cdot c \\cdot \\Delta T = 100\\text{ g} \\times 4{,}2\\text{ J/g}^\circ C \\times (45 - 25)^\circ C = 100 \\times 4{,}2 \\times 20 = 8.400\\text{ Joule}$."
+            },
+            {
+                round: 2,
+                roundName: "ROUND 2: Speed Calculation",
+                question: "Diketahui reaksi:<br>1) $\\text{C(s)} + \\text{O}_2\\text{(g)} \\rightarrow \\text{CO}_2\\text{(g)} \\quad \\Delta H = -393{,}5\\text{ kJ}$<br>2) $\\text{H}_2\\text{(g)} + \\frac{1}{2}\\text{O}_2\\text{(g)} \\rightarrow \\text{H}_2\\text{O(l)} \\quad \\Delta H = -285{,}8\\text{ kJ}$<br>Berapakah perubahan entalpi pembentukan standar ($\\Delta H_f^\circ$) untuk 1 mol $\\text{CO}_2\\text{(g)}$?",
+                options: [
+                    "+393,5 kJ/mol",
+                    "-393,5 kJ/mol",
+                    "-679,3 kJ/mol",
+                    "-107,7 kJ/mol"
+                ],
+                correct: 1,
+                explanation: "Entalpi pembentukan standar ($\\Delta H_f^\circ$) adalah perubahan entalpi pada pembentukan 1 mol senyawa dari unsur-unsurnya. Reaksi (1) sudah menunjukkan pembentukan 1 mol $\\text{CO}_2$ dari unsur $\\text{C}$ dan $\\text{O}_2$, maka $\\Delta H_f^\circ \\text{CO}_2 = -393{,}5\\text{ kJ/mol}$."
+            },
+            {
+                round: 2,
+                roundName: "ROUND 2: Speed Calculation",
+                question: "Diketahui reaksi penjumlahan menurut Hukum Hess:<br>• $\\text{A} + \\text{B} \\rightarrow \\text{C} \\quad \\Delta H = -100\\text{ kJ}$<br>• $\\text{C} \\rightarrow \\text{D} \\quad \\Delta H = +40\\text{ kJ}$<br>Berapakah $\\Delta H$ untuk reaksi total $\\text{A} + \\text{B} \\rightarrow \\text{D}$?",
+                options: [
+                    "-140 kJ",
+                    "-60 kJ",
+                    "+60 kJ",
+                    "+140 kJ"
+                ],
+                correct: 1,
+                explanation: "Menurut Hukum Hess, $\\Delta H_{total} = \\Delta H_1 + \\Delta H_2 = (-100\\text{ kJ}) + (+40\\text{ kJ}) = -60\\text{ kJ}$."
+            },
+
+            // ROUND 3: Ultimate Challenge
+            {
+                round: 3,
+                roundName: "ROUND 3: Ultimate Challenge",
+                question: "Diketahui energi ikatan rata-rata:<br>• $\\text{C}=\\text{C} = 614\\text{ kJ/mol}$<br>• $\\text{C}-\\text{C} = 348\\text{ kJ/mol}$<br>• $\\text{C}-\\text{H} = 413\\text{ kJ/mol}$<br>• $\\text{H}-\\text{H} = 436\\text{ kJ/mol}$<br>Hitung $\\Delta H$ reaksi adisi etena: $\\text{C}_2\\text{H}_4 + \\text{H}_2 \\rightarrow \\text{C}_2\\text{H}_6$ !",
+                options: [
+                    "-124 kJ/mol",
+                    "+124 kJ/mol",
+                    "-248 kJ/mol",
+                    "+86 kJ/mol"
+                ],
+                correct: 0,
+                explanation: "$\\Delta H = \\Sigma D_{\\text{pemutusan (kiri)}} - \\Sigma D_{\\text{pembentukan (kanan)}}$.<br>Kiri: $1(\\text{C}=\\text{C}) + 4(\\text{C}-\\text{H}) + 1(\\text{H}-\\text{H}) = 614 + 4(413) + 436 = 2702\\text{ kJ}$.<br>Kanan: $1(\\text{C}-\\text{C}) + 6(\\text{C}-\\text{H}) = 348 + 6(413) = 2826\\text{ kJ}$.<br>$\\Delta H = 2702 - 2826 = -124\\text{ kJ/mol}$."
+            },
+            {
+                round: 3,
+                roundName: "ROUND 3: Ultimate Challenge",
+                question: "Pada pembakaran sempurna 0,5 mol gas metana ($\\text{CH}_4$) dibebaskan kalor sebesar $445\\text{ kJ}$. Manakah persamaan termokimia pembakaran standar ($\\Delta H_c^\circ$) metana yang tepat?",
+                options: [
+                    "$\\text{CH}_4\\text{(g)} + 2\\text{O}_2\\text{(g)} \\rightarrow \\text{CO}_2\\text{(g)} + 2\\text{H}_2\\text{O(l)} \\quad \\Delta H = -890\\text{ kJ/mol}$",
+                    "$\\text{CH}_4\\text{(g)} + 2\\text{O}_2\\text{(g)} \\rightarrow \\text{CO}_2\\text{(g)} + 2\\text{H}_2\\text{O(l)} \\quad \\Delta H = +890\\text{ kJ/mol}$",
+                    "$\\text{CH}_4\\text{(g)} + 2\\text{O}_2\\text{(g)} \\rightarrow \\text{CO}_2\\text{(g)} + 2\\text{H}_2\\text{O(l)} \\quad \\Delta H = -445\\text{ kJ/mol}$",
+                    "$\\frac{1}{2}\\text{CH}_4\\text{(g)} + \\text{O}_2\\text{(g)} \\rightarrow \\frac{1}{2}\\text{CO}_2\\text{(g)} + \\text{H}_2\\text{O(l)} \\quad \\Delta H = -890\\text{ kJ/mol}$"
+                ],
+                correct: 0,
+                explanation: "$\\Delta H_c^\circ$ dihitung untuk 1 mol zat yang dibakar. Jika 0,5 mol melepas $445\\text{ kJ}$, maka untuk 1 mol melepas $445 / 0{,}5 = 890\\text{ kJ}$. Karena dibebaskan (eksoterm), nilai $\\Delta H = -890\\text{ kJ/mol}$."
+            },
+            {
+                round: 3,
+                roundName: "ROUND 3: Ultimate Challenge",
+                question: "Sebuah kantong kompres dingin instan bekerja berdasarkan pelarutan kalsium amonium nitrat dalam air. Suhu kantong turun secara drastis saat diaktifkan. Analisis termokimia yang BENAR adalah...",
+                options: [
+                    "Reaksi eksoterm, kalor berpindah dari sistem ke tangan, $\\Delta H < 0$",
+                    "Reaksi endoterm, sistem menyerap kalor dari lingkungan (tangan), $\\Delta H > 0$",
+                    "Reaksi eksoterm, sistem menyerap kalor dari lingkungan, $\\Delta H > 0$",
+                    "Reaksi isolasi, tidak terjadi perpindahan energi, $\\Delta H = 0$"
+                ],
+                correct: 1,
+                explanation: "Kompres dingin mengalami reaksi ENDOTERM ($\\Delta H > 0$). Sistem menyerap kalor dari lingkungan sekitar (termasuk kulitan/tangan pengguna), sehingga suhu lingkungan terasa dingin."
+            }
+        ];
+
+        // Game State Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswersCount = 0;
+        let streak = 0;
+        let timer = null;
+        let timeLeft = 25;
+        let player = "Champion";
+        let answersHistory = [];
+
+        const TIME_PER_QUESTION = 25; // seconds per question
+
+        function startGame() {
+            const inputName = document.getElementById('playerName').value.trim();
+            if (inputName) {
+                player = inputName;
+            } else {
+                player = "Contestant #" + Math.floor(100 + Math.random() * 900);
+            }
+
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            streak = 0;
+            answersHistory = [];
+
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('quizScreen').classList.add('flex');
+
+            loadQuestion();
+        }
+
+        function renderMath() {
+            if (window.katex) {
+                const mathElements = document.querySelectorAll('#questionText, #feedbackText, .option-text');
+                mathElements.forEach(el => {
+                    // Render inline math surrounded by $...$
+                    const html = el.innerHTML;
+                    const rendered = html.replace(/\$(.*?)\$/g, (match, formula) => {
+                        try {
+                            return katex.renderToString(formula, { throwOnError: false });
+                        } catch (e) {
+                            return match;
+                        }
+                    });
+                    el.innerHTML = rendered;
+                });
+            }
+        }
+
+        function loadQuestion() {
+            clearInterval(timer);
+            const q = questions[currentQuestionIndex];
+
+            // Round & Progress Info
+            document.getElementById('roundBadge').innerText = q.roundName;
+            document.getElementById('questionNum').innerText = `Soal ${currentQuestionIndex + 1}/${questions.length}`;
+            document.getElementById('scoreDisplay').innerText = `${score} PTS`;
+            
+            // Progress Bar
+            const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+            // Question Text
+            document.getElementById('questionText').innerHTML = q.question;
+
+            // Options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'glass-card p-4 rounded-xl text-left flex items-start gap-3 border border-slate-700/60 hover:bg-slate-800 transition-all cursor-pointer group w-full';
+                btn.onclick = () => checkAnswer(idx);
+                btn.id = `opt-${idx}`;
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-lg bg-slate-800 text-cyan-400 font-orbitron font-bold flex items-center justify-center text-xs group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors flex-shrink-0">
+                        ${optionLabels[idx]}
+                    </span>
+                    <span class="option-text text-sm text-slate-200 pt-0.5 leading-snug">${opt}</span>
+                `;
+                container.appendChild(btn);
+            });
+
+            // Streak Badge Display
+            const streakBadge = document.getElementById('streakBadge');
+            if (streak > 1) {
+                streakBadge.classList.remove('hidden');
+                document.getElementById('streakCount').innerText = streak;
+                document.getElementById('bonusPts').innerText = streak * 25;
+            } else {
+                streakBadge.classList.add('hidden');
+            }
+
+            // Hide Feedback
+            document.getElementById('feedbackContainer').classList.add('hidden');
+
+            // Math Rendering
+            renderMath();
+
+            // Start Countdown Timer
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = TIME_PER_QUESTION;
+            const timerDisplay = document.getElementById('timerDisplay');
+            timerDisplay.innerText = `${timeLeft}s`;
+            timerDisplay.classList.remove('timer-warning');
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = `${timeLeft}s`;
+
+                if (timeLeft <= 5 && timeLeft > 0) {
+                    timerDisplay.classList.add('timer-warning');
+                    playSound('tick');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            playSound('wrong');
+            streak = 0;
+            disableOptions();
+
+            const q = questions[currentQuestionIndex];
+            const correctBtn = document.getElementById(`opt-${q.correct}`);
+            if (correctBtn) {
+                correctBtn.classList.add('border-emerald-500', 'bg-emerald-500/20');
+            }
+
+            showFeedback(false, "Waktu Habis! Kamu tidak menjawab tepat waktu.");
+        }
+
+        function checkAnswer(selectedIndex) {
+            clearInterval(timer);
+            disableOptions();
+
+            const q = questions[currentQuestionIndex];
+            const isCorrect = (selectedIndex === q.correct);
+            const selectedBtn = document.getElementById(`opt-${selectedIndex}`);
+            const correctBtn = document.getElementById(`opt-${q.correct}`);
+
+            if (isCorrect) {
+                playSound('correct');
+                streak++;
+                correctAnswersCount++;
+                
+                // Multiplier by Round
+                const multiplier = q.round === 3 ? 2 : 1;
+                const basePoints = 100 * multiplier;
+                const speedBonus = timeLeft * 5;
+                const streakBonus = (streak - 1) * 25;
+                const pointsGained = basePoints + speedBonus + streakBonus;
+
+                score += pointsGained;
+                document.getElementById('scoreDisplay').innerText = `${score} PTS`;
+
+                if (selectedBtn) {
+                    selectedBtn.classList.add('border-emerald-500', 'bg-emerald-500/20');
+                }
+                showFeedback(true, `Benar! +${pointsGained} Pts (${multiplier > 1 ? 'Round Multiplier 2x!' : ''})`);
+            } else {
+                playSound('wrong');
+                streak = 0;
+
+                if (selectedBtn) {
+                    selectedBtn.classList.add('border-rose-500', 'bg-rose-500/20');
+                }
+                if (correctBtn) {
+                    correctBtn.classList.add('border-emerald-500', 'bg-emerald-500/20');
+                }
+                showFeedback(false, "Jawaban Kurang Tepat!");
+            }
+        }
+
+        function disableOptions() {
+            const container = document.getElementById('optionsContainer');
+            const buttons = container.getElementsByTagName('button');
+            for (let btn of buttons) {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-800', 'cursor-pointer');
+                btn.classList.add('cursor-not-allowed', 'opacity-80');
+            }
+        }
+
+        function showFeedback(isCorrect, statusText) {
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            const q = questions[currentQuestionIndex];
+
+            if (isCorrect) {
+                feedbackTitle.className = "flex items-center gap-2 font-bold mb-2 text-sm md:text-base text-emerald-400";
+                feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${statusText}`;
+            } else {
+                feedbackTitle.className = "flex items-center gap-2 font-bold mb-2 text-sm md:text-base text-rose-400";
+                feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${statusText}`;
+            }
+
+            feedbackText.innerHTML = `<strong>Pembahasan:</strong> ${q.explanation}`;
+            feedbackContainer.classList.remove('hidden');
+
+            renderMath();
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            clearInterval(timer);
+            playSound('finish');
+
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            document.getElementById('resultPlayerName').innerText = player;
+            document.getElementById('finalScore').innerText = score;
+            
+            const accuracy = Math.round((correctAnswersCount / questions.length) * 100);
+            document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
+            document.getElementById('finalCorrect').innerText = `${correctAnswersCount}/${questions.length}`;
+
+            // Champion Gelar Title based on performance
+            const badgeEl = document.getElementById('championBadge');
+            if (accuracy >= 90) {
+                badgeEl.innerText = "🏆 GRAND CHAMPION OF THERMOCHEMISTRY";
+                badgeEl.className = "inline-block px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-400/60 text-amber-300 font-orbitron font-extrabold text-sm md:text-lg mb-6 shadow-lg shadow-amber-500/20";
+            } else if (accuracy >= 70) {
+                badgeEl.innerText = "🥇 MASTER OF THERMOCHEMISTRY";
+                badgeEl.className = "inline-block px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/60 text-cyan-300 font-orbitron font-extrabold text-sm md:text-lg mb-6 shadow-lg shadow-cyan-500/20";
+            } else if (accuracy >= 50) {
+                badgeEl.innerText = "🥈 RUNNER UP CHAMPION";
+                badgeEl.className = "inline-block px-4 py-2 rounded-xl bg-slate-500/20 border border-slate-400/60 text-slate-200 font-orbitron font-extrabold text-sm md:text-lg mb-6";
+            } else {
+                badgeEl.innerText = "🎖️ THERMOCHEMISTRY CONTENDER";
+                badgeEl.className = "inline-block px-4 py-2 rounded-xl bg-purple-500/20 border border-purple-400/60 text-purple-300 font-orbitron font-extrabold text-sm md:text-lg mb-6";
+            }
+
+            // Save to Local Leaderboard
+            saveToLeaderboard(player, score, accuracy);
+            renderLeaderboard();
+        }
+
+        function saveToLeaderboard(name, scoreVal, accuracyVal) {
+            try {
+                let leaderboard = JSON.parse(localStorage.getItem('coc_chem_leaderboard') || '[]');
+                leaderboard.push({
+                    name: name,
+                    score: scoreVal,
+                    accuracy: accuracyVal,
+                    date: new Date().toLocaleDateString('id-ID')
+                });
+                
+                // Sort descending by score
+                leaderboard.sort((a, b) => b.score - a.score);
+                // Keep top 10
+                leaderboard = leaderboard.slice(0, 10);
+                
+                localStorage.setItem('coc_chem_leaderboard', JSON.stringify(leaderboard));
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+        }
+
+        function renderLeaderboard() {
+            const listEl = document.getElementById('leaderboardList');
+            listEl.innerHTML = '';
+
+            try {
+                const leaderboard = JSON.parse(localStorage.getItem('coc_chem_leaderboard') || '[]');
+                
+                if (leaderboard.length === 0) {
+                    listEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-2">Belum ada catatan skor.</p>';
+                    return;
+                }
+
+                leaderboard.forEach((item, index) => {
+                    const row = document.createElement('div');
+                    row.className = `flex items-center justify-between p-2.5 rounded-lg border text-xs ${
+                        item.name === player && item.score === score 
+                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200' 
+                            : 'bg-slate-900/60 border-slate-800 text-slate-300'
+                    }`;
+
+                    let rankIcon = `#${index + 1}`;
+                    if (index === 0) rankIcon = '🥇';
+                    if (index === 1) rankIcon = '🥈';
+                    if (index === 2) rankIcon = '🥉';
+
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="font-orbitron font-bold w-6 text-center">${rankIcon}</span>
+                            <span class="font-semibold truncate max-w-[120px] sm:max-w-[180px]">${item.name}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-slate-400">${item.accuracy}% Acc</span>
+                            <span class="font-orbitron font-bold text-amber-300">${item.score} PTS</span>
+                        </div>
+                    `;
+                    listEl.appendChild(row);
+                });
+            } catch (e) {
+                listEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-2">Tidak dapat memuat leaderboard.</p>';
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        // Initialize KaTeX on load
+        window.onload = function() {
+            renderMath();
+        };
+    </script>
+</body>
+</html>
